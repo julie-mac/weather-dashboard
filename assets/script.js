@@ -1,7 +1,7 @@
 const apiKey = 'ef8743cab46a8d9dba624043e120f77a'; 
 const baseUrl = 'https://api.openweathermap.org/data/2.5/forecast';
 
-// Function to fetch weather data from OpenWeather
+// Fetching weather data from OpenWeather API
 async function getWeatherData(city) {
     const url = `${baseUrl}?q=${city}&appid=${apiKey}`;
     try {
@@ -27,6 +27,7 @@ function displayCurrentWeather(data) {
     const humidity = data.list[0].main.humidity;
     const windSpeed = data.list[0].wind.speed;
 
+    //Rendering card for current weather of chosen city
     const currentWeatherSection = document.getElementById('current-weather');
     currentWeatherSection.innerHTML = `
         <div class="card">
@@ -48,11 +49,8 @@ function displayForecast(data) {
     const forecastList = data.list;
     const forecastSection = document.getElementById('forecast');
     forecastSection.innerHTML = `<h2>5-Day Forecast</h2>`;
-
-    // Get the current date
     const currentDate = new Date();
-    
-    // Display the forecast for the following five days
+    // Displaying the forecast for the following five days
     for (let i = 1; i <= 5; i++) {
         const forecast = forecastList[i];
         const date = new Date(currentDate);
@@ -66,7 +64,7 @@ function displayForecast(data) {
         const humidity = forecast.main.humidity;
         const windSpeed = forecast.wind.speed;
 
-        // Create a forecast card and append it to the forecast section
+        // Creating a forecast card and appending it to the forecast section
         const forecastCard = document.createElement('div');
         forecastCard.classList.add('card', 'mb-3');
         forecastCard.innerHTML = `
@@ -82,10 +80,7 @@ function displayForecast(data) {
     }
 }
 
-
-
-
-// Function to handle form submit
+// Function to handle search button
 function handleFormSubmit(event) {
     event.preventDefault();
     const city = document.getElementById('city-input').value.trim();
@@ -102,6 +97,7 @@ function handleFormSubmit(event) {
                 alert(error.message);
             });
     } else {
+        //Throwing an error if city is empty or does not exist
         alert('Please enter a city name.');
     }
 }
@@ -124,8 +120,6 @@ function updateSearchHistory(city) {
     });
 }
 
-
-
 // Event handler for click on search history city
 function handleHistoryCityClick(event) {
     const city = event.target.textContent;
@@ -145,19 +139,10 @@ document.getElementById('search-form').addEventListener('submit', handleFormSubm
 // Attaching event listener to the search history list
 document.getElementById('search-history').addEventListener('click', handleHistoryCityClick);
 
-
-
-//NOTES FOR MYSELF
-
-//make the fetch its own function
-//handle submit as a different function
-
-// GIVEN a weather dashboard with form inputs
-// WHEN I search for a city
-// THEN I am presented with current and future conditions for that city and that city is added to the search history
-// WHEN I view current weather conditions for that city
-// THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, and the the wind speed
-// WHEN I view future weather conditions for that city
-// THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity
-// WHEN I click on a city in the search history
-// THEN I am again presented with current and future conditions for that city
+//Function to load search history when you open the site
+function init() {
+    const searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    updateSearchHistory(searchHistory);
+}
+//Calling the init function so search history loads when opening
+window.addEventListener('load', init);
