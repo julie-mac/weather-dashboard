@@ -26,31 +26,38 @@ function displayCurrentWeather(data) {
     const temperatureCelsius = (temperature - 273.15).toFixed(2);
     const humidity = data.list[0].main.humidity;
     const windSpeed = data.list[0].wind.speed;
-    
 
     const currentWeatherSection = document.getElementById('current-weather');
     currentWeatherSection.innerHTML = `
-        <h2>${city} - ${date}</h2>
-        <img src="${iconUrl}" alt="Weather Icon">
-        <p>Temperature: ${temperatureCelsius} &#8451;</p>
-        <p>Humidity: ${humidity}%</p>
-        <p>Wind Speed: ${windSpeed} m/s</p>
+        <div class="card">
+            <h2>Current Weather</h2>
+            <div class="card-body">
+                <h5 class="card-title">${city} - ${date}</h5>
+                <img src="${iconUrl}" alt="Weather Icon">
+                <p class="card-text">Temperature: ${temperatureCelsius} &#8451;</p>
+                <p class="card-text">Humidity: ${humidity}%</p>
+                <p class="card-text">Wind Speed: ${windSpeed} m/s</p>
+            </div>
+        </div>
     `;
 }
 
 
-// Function to display the 5-day forecast
+// Function to display the 5-day forecast as cards
 function displayForecast(data) {
-    // Extract the required data from the API response for the next 5 days
-    const forecastList = data.list.slice(1, 6); // Get the next 5 days' data
-
-    // Update the HTML elements to display the 5-day forecast
+    const forecastList = data.list;
     const forecastSection = document.getElementById('forecast');
     forecastSection.innerHTML = `<h2>5-Day Forecast</h2>`;
 
-    // Loop through the forecast data and create forecast cards for each day
-    forecastList.forEach((forecast) => {
-        const date = new Date(forecast.dt * 1000).toLocaleDateString();
+    // Get the current date
+    const currentDate = new Date();
+    
+    // Display the forecast for the following five days
+    for (let i = 1; i <= 5; i++) {
+        const forecast = forecastList[i];
+        const date = new Date(currentDate);
+        date.setDate(currentDate.getDate() + i);
+        
         const iconCode = forecast.weather[0].icon;
         const iconUrl = `https://openweathermap.org/img/w/${iconCode}.png`;
         const temperature = forecast.main.temp;
@@ -59,21 +66,26 @@ function displayForecast(data) {
         const humidity = forecast.main.humidity;
         const windSpeed = forecast.wind.speed;
 
-        // Create a forecast card for each day and append to section
+        // Create a forecast card and append it to the forecast section
         const forecastCard = document.createElement('div');
-        forecastCard.classList.add('forecast-card');
+        forecastCard.classList.add('card', 'mb-3');
         forecastCard.innerHTML = `
-            <p>${date}</p>
-            <img src="${iconUrl}" alt="Weather Icon">
-            <p>Temperature: ${temperatureCelsius} &#8451;</p>
-            <p>Humidity: ${humidity}%</p>
-            <p>Wind Speed: ${windSpeed} m/s</p>
+            <div class="card-body">
+                <h5 class="card-title">${date.toLocaleDateString()}</h5>
+                <img src="${iconUrl}" alt="Weather Icon">
+                <p class="card-text">Temperature: ${temperatureCelsius} &#8451;</p>
+                <p class="card-text">Humidity: ${humidity}%</p>
+                <p class="card-text">Wind Speed: ${windSpeed} m/s</p>
+            </div>
         `;
         forecastSection.appendChild(forecastCard);
-    });
+    }
 }
 
-// Function to handle form submission
+
+
+
+// Function to handle form submit
 function handleFormSubmit(event) {
     event.preventDefault();
     const city = document.getElementById('city-input').value.trim();
@@ -96,22 +108,22 @@ function handleFormSubmit(event) {
 
 // Update Search History function
 function updateSearchHistory(city) {
-    
-    let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    const searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    const searchHistoryList = document.querySelector('#search-history .list-group');
+    searchHistoryList.innerHTML = '';
 
-    if (!searchHistory.includes(city)) {
-        searchHistory.push(city);
-        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+    // Looping through each item in search history and creating a button element
+    searchHistory.forEach((city) => {
+        const historyButton = document.createElement('button');
+        historyButton.textContent = city;
+        historyButton.classList.add('list-group-item', 'list-group-item-action');
+        searchHistoryList.appendChild(historyButton);
 
-        const searchHistoryList = document.querySelector('#search-history ul');
-        const newCityItem = document.createElement('li');
-        newCityItem.textContent = city;
-        searchHistoryList.appendChild(newCityItem);
-
-        // Attach a click event listener to the new city item
-        newCityItem.addEventListener('click', handleHistoryCityClick);
-    }
+        // Attaching an event listener to each button so the user can go back to the cities they previously searched
+        historyButton.addEventListener('click', handleHistoryCityClick);
+    });
 }
+
 
 
 // Event handler for click on search history city
@@ -127,10 +139,10 @@ function handleHistoryCityClick(event) {
         });
 }
 
-// Attach event listener to the form submission
+// Attaching event listener to the form submission button
 document.getElementById('search-form').addEventListener('submit', handleFormSubmit);
 
-// Attach event listener to the search history list
+// Attaching event listener to the search history list
 document.getElementById('search-history').addEventListener('click', handleHistoryCityClick);
 
 
