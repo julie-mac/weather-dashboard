@@ -11,7 +11,7 @@ No installation required - [Click here](https://julie-mac.github.io/weather-dash
 ## Usage
 
 To use this webpage, simply type in the name of a city you'd like to check the weather for in the search bar and click the search button. It will generate the current weather for the city as well as a 5-day forecast so you can see the weather ahead of time!
-At the bottom of the page, you can see the previous cities you've searched for under the search history. You can click those buttons to see those cities again.
+At the bottom of the page, you can see the previous cities you've searched for under the search history. You can click those buttons to see those cities again. (Upon deployment, I'm not sure why the local storage isn't working. But it works locally for me!)
 
 ![Screenshot of Weather Dashboad](/assets/images/screenshot.png)
 
